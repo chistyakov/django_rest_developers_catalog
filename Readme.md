@@ -18,8 +18,7 @@ GET /developers/
 Пример ответа:
 
 ```javascript
-developers: [
-{ 
+[{ 
  'name': 'Иван',
  'surname': 'Иванов',
  'skills': ['Python', 'Django', 'Django REST Framework'],
