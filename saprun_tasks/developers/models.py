@@ -2,7 +2,10 @@ from django.db import models
 
 
 class Skill(models.Model):
-    pass
+    title = models.CharField(max_length=240)
+
+    def __str__(self):
+        return self.title
 
 
 class Education(models.Model):
