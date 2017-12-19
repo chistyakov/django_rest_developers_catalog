@@ -1,26 +1,29 @@
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
 class Skill(models.Model):
-# TODO: make name unique
+    # TODO: make name unique
     name = models.CharField(max_length=300)
 
     def __str__(self):
         return self.name
 
 
-# TODO: add __str__ for all models for admin
-
-
 class Company(models.Model):
-# TODO: make name unique
+    # TODO: make name unique
     name = models.CharField(max_length=400)
+
+    def __str__(self):
+        return self.name
 
 
 class University(models.Model):
     # TODO: make name unique
     name = models.CharField(max_length=400)
+
+    def __str__(self):
+        return self.name
 
 
 class Developer(models.Model):
@@ -36,6 +39,11 @@ class Developer(models.Model):
         related_name='employees_history', blank=True
     )
 
+    def __str__(self):
+        if not self.surname:
+            return self.name
+        return f'{self.name} {self.surname}'
+
 
 class Education(models.Model):
     developer = models.ForeignKey(Developer, on_delete=models.CASCADE)
@@ -45,6 +53,10 @@ class Education(models.Model):
         # don't add MaxValueValidator(currentyear) to allow ungraduated developers
     )
 
+    def __str__(self):
+        return (f'{self.developer} graduated '
+                f'from {self.university} at {self.year_of_graduation}')
+
 
 class Employment(models.Model):
     developer = models.ForeignKey(Developer, on_delete=models.CASCADE)
@@ -52,3 +64,11 @@ class Employment(models.Model):
     role = models.CharField(max_length=200)
     from_date = models.DateField()
     to_date = models.DateField(null=True)
+
+    def __str__(self):
+        if self.to_date:
+            return (f'{self.developer} was {self.role} of {self.company} '
+                    f'from {self.from_date:%Y-%m-%d} to {self.to_date:%Y-%m-%d}')
+        else:
+            return (f'{self.developer} is being {self.role} of {self.company} '
+                    f'from {self.from_date:%Y-%m-%d} till now')
