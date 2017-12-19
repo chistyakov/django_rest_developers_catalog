@@ -1,6 +1,5 @@
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from datetime import datetime
 
 
 class Skill(models.Model):
@@ -10,8 +9,11 @@ class Skill(models.Model):
         return self.title
 
 
+# TODO: add __str__ for all models for admin
+
+
 class Company(models.Model):
-    pass
+    name = models.CharField(max_length=400)
 
 
 class University(models.Model):
@@ -27,7 +29,8 @@ class Developer(models.Model):
         related_name='graduated', blank=True
     )
     employment_history = models.ManyToManyField(
-        Company, related_name='employers_history', blank=True
+        Company, through='Employment',
+        related_name='employees_history', blank=True
     )
 
 
@@ -35,6 +38,14 @@ class Education(models.Model):
     developer = models.ForeignKey(Developer, on_delete=models.CASCADE)
     university = models.ForeignKey(University, on_delete=models.CASCADE)
     year_of_graduation = models.IntegerField(
-        validators=(MinValueValidator(1900), )
+        validators=(MinValueValidator(1900),)
         # don't add MaxValueValidator(currentyear) to allow ungraduated developers
     )
+
+
+class Employment(models.Model):
+    developer = models.ForeignKey(Developer, on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
+    role = models.CharField(max_length=200)
+    from_date = models.DateField()
+    to_date = models.DateField(null=True)
