@@ -69,22 +69,22 @@ class Employment(models.Model):
     developer = models.ForeignKey(Developer, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     role = models.CharField(max_length=200)
-    from_date = models.DateField(
+    start_date = models.DateField(
         validators=(less_then_now_validator, )
     )
-    to_date = models.DateField(
+    end_date = models.DateField(
         null=True,
         validators=(less_then_now_validator,)
     )
 
     def __str__(self):
-        if self.to_date:
+        if self.end_date:
             return (f'{self.developer} was {self.role} of {self.company} '
-                    f'from {self.from_date:%Y-%m-%d} to {self.to_date:%Y-%m-%d}')
+                    f'from {self.start_date:%Y-%m-%d} to {self.end_date:%Y-%m-%d}')
         else:
             return (f'{self.developer} is being {self.role} of {self.company} '
-                    f'from {self.from_date:%Y-%m-%d} till now')
+                    f'from {self.start_date:%Y-%m-%d} till now')
 
     def clean(self):
-        if self.to_date and self.to_date < self.from_date:
+        if self.end_date and self.end_date < self.start_date:
             raise ValidationError('start of employment should be greater then end')

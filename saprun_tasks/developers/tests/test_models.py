@@ -101,8 +101,8 @@ class EmploymentModelTestCase(TestCase):
             developer=carmack,
             company=oculus,
             role='CTO',
-            from_date=date(year=2013, month=7, day=1),
-            to_date=None,
+            start_date=date(year=2013, month=7, day=1),
+            end_date=None,
         )
         self.assertEqual(
             str(carmack_oculus),
@@ -113,8 +113,8 @@ class EmploymentModelTestCase(TestCase):
             developer=carmack,
             company=id_software,
             role='co-founder',
-            from_date=date(year=1991, month=2, day=1),
-            to_date=date(year=2013, month=7, day=1)
+            start_date=date(year=1991, month=2, day=1),
+            end_date=date(year=2013, month=7, day=1)
         )
         self.assertEqual(
             str(carmack_id_software),
@@ -130,8 +130,8 @@ class EmploymentModelTestCase(TestCase):
                 developer=carmack,
                 company=oculus,
                 role='CTO',
-                from_date=date(year=2013, month=7, day=1),
-                to_date=date(year=2015, month=12, day=22),  # more then patched now
+                start_date=date(year=2013, month=7, day=1),
+                end_date=date(year=2015, month=12, day=22),  # more then patched now
             )
 
             self.assertRaises(ValidationError, carmack_oculus_empl.full_clean)
@@ -145,8 +145,8 @@ class EmploymentModelTestCase(TestCase):
                 developer=carmack,
                 company=oculus,
                 role='CTO',
-                from_date=date(year=2015, month=12, day=22),  # more then patched now
-                to_date=None,
+                start_date=date(year=2015, month=12, day=22),  # more then patched now
+                end_date=None,
             )
 
             self.assertRaises(ValidationError, carmack_oculus_empl.full_clean)
@@ -155,36 +155,36 @@ class EmploymentModelTestCase(TestCase):
         carmack = Developer.objects.create(name='John', surname='Carmack')
         oculus = Company.objects.create(name='Oculus VR')
 
-        # to_date > from_date => ValidationError
+        # end_date > start_date => ValidationError
         carmack_oculus_empl = Employment.objects.create(
             developer=carmack,
             company=oculus,
             role='CTO',
-            from_date=date(year=2013, month=7, day=1),
-            to_date=date(year=2013, month=6, day=30),
+            start_date=date(year=2013, month=7, day=1),
+            end_date=date(year=2013, month=6, day=30),
         )
         self.assertRaises(ValidationError, carmack_oculus_empl.full_clean)
 
-        # to_date == from_date => NO ValidationError
+        # end_date == start_date => NO ValidationError
         carmack_oculus_empl = Employment.objects.create(
             developer=carmack,
             company=oculus,
             role='CTO',
-            from_date=date(year=2013, month=7, day=1),
-            to_date=date(year=2013, month=7, day=1),
+            start_date=date(year=2013, month=7, day=1),
+            end_date=date(year=2013, month=7, day=1),
         )
         try:
             carmack_oculus_empl.full_clean()
         except ValidationError:
             self.fail('Unexpected ValidationError')
 
-        # to_date > from_date => NO ValidationError
+        # end_date > start_date => NO ValidationError
         carmack_oculus_empl = Employment.objects.create(
             developer=carmack,
             company=oculus,
             role='CTO',
-            from_date=date(year=2013, month=7, day=1),
-            to_date=date(year=2013, month=7, day=2),
+            start_date=date(year=2013, month=7, day=1),
+            end_date=date(year=2013, month=7, day=2),
         )
         try:
             carmack_oculus_empl.full_clean()

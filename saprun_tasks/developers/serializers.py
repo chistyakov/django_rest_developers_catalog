@@ -25,15 +25,15 @@ class CompanySerializers(serializers.ModelSerializer):
 
 class EmploymentSerializer(serializers.ModelSerializer):
     company = CompanySerializers()
-    from_date = serializers.DateField(source='from_date')
-    to = serializers.DateField(source='to_date')
+    start_date = serializers.DateField(source='start_date')
+    to = serializers.DateField(source='end_date')
 
     class Meta:
         model = Employment
         fields = ('company', 'role', 'from', 'to')
 
-EmploymentSerializer._declared_fields['from'] = EmploymentSerializer._declared_fields['from_date']
-del EmploymentSerializer._declared_fields['from_date']
+EmploymentSerializer._declared_fields['from'] = EmploymentSerializer._declared_fields['start_date']
+del EmploymentSerializer._declared_fields['start_date']
 
 
 class DeveloperSerializer(serializers.ModelSerializer):
