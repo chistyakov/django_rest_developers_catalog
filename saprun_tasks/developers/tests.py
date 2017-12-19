@@ -3,7 +3,14 @@ from datetime import datetime
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from developers.models import Developer, University, Education, Company, Employment
+from developers.models import (
+    Developer,
+    University,
+    Education,
+    Company,
+    Employment,
+    Skill,
+)
 
 
 class DeveloperTestCase(TestCase):
@@ -200,3 +207,44 @@ class DevelopersListTestCase(TestCase):
              'to': '1976-04-01', },
         ])
         self.assertListEqual(response.json()[1]['employment_history'], [])
+
+    def test_filter_developers_by_skills(self):
+        unix_skill = Skill.objects.create(title='Unix')
+        lisp_skill = Skill.objects.create(title='Lisp')
+        emacs_skill = Skill.objects.create(title='Emacs')
+        electronic_skill = Skill.objects.create(title='Electronic')
+
+        Developer.objects.create(name='No skills')
+
+        self.wozniak.skills.add(electronic_skill, unix_skill)
+        self.stallman.skills.add(unix_skill, lisp_skill, emacs_skill)
+
+        response = self.client.get('/developers/?skill=Lisp')
+        self.assertListEqual(
+            response.json(), [
+                {'name': 'Richard', 'surname': 'Stallman',
+                 'skills': ['Unix', 'Lisp', 'Emacs'],
+                 'educations': [], 'employment_history': []},
+            ]
+        )
+
+        response = self.client.get('/developers/?skill=Unix')
+        self.assertListEqual(
+            response.json(), [
+                {'name': 'Stephen', 'surname': 'Wozniak',
+                 'skills': ['Unix', 'Electronic'],
+                 'educations': [], 'employment_history': []},
+                {'name': 'Richard', 'surname': 'Stallman',
+                 'skills': ['Unix', 'Lisp', 'Emacs'],
+                 'educations': [], 'employment_history': []},
+            ]
+        )
+
+        response = self.client.get('/developers/?skill=Unix&skill=Lisp')
+        self.assertListEqual(
+            response.json(), [
+                {'name': 'Richard', 'surname': 'Stallman',
+                 'skills': ['Unix', 'Lisp', 'Emacs'],
+                 'educations': [], 'employment_history': []},
+            ]
+        )

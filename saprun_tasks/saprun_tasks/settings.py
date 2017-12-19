@@ -25,7 +25,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'secret')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.environ.get('DEBUG', False))
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [os.environ.get('HOST', '0.0.0.0')]
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'developers',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

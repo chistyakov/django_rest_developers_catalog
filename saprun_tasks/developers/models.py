@@ -3,6 +3,8 @@ from django.db import models
 
 
 class Skill(models.Model):
+# TODO: make title unique
+# TODO: rename to 'name' for consistency
     title = models.CharField(max_length=300)
 
     def __str__(self):
@@ -13,10 +15,12 @@ class Skill(models.Model):
 
 
 class Company(models.Model):
+# TODO: make name unique
     name = models.CharField(max_length=400)
 
 
 class University(models.Model):
+    # TODO: make name unique
     name = models.CharField(max_length=400)
 
 
