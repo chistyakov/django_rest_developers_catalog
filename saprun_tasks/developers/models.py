@@ -3,24 +3,21 @@ from django.db import models
 
 
 class Skill(models.Model):
-    # TODO: make name unique
-    name = models.CharField(max_length=300)
+    name = models.CharField(max_length=300, unique=True)
 
     def __str__(self):
         return self.name
 
 
 class Company(models.Model):
-    # TODO: make name unique
-    name = models.CharField(max_length=400)
+    name = models.CharField(max_length=400, unique=True)
 
     def __str__(self):
         return self.name
 
 
 class University(models.Model):
-    # TODO: make name unique
-    name = models.CharField(max_length=400)
+    name = models.CharField(max_length=400, unique=True)
 
     def __str__(self):
         return self.name

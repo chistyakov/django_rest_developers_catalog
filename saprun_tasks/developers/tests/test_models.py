@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import TestCase
 
 from developers.models import (
@@ -19,6 +20,11 @@ class SkillModelTestCase(TestCase):
 
         self.assertEqual(str(tdd_skill), 'TDD')
 
+    def test_name_is_unique(self):
+        Skill.objects.create(name='TDD')
+
+        self.assertRaises(IntegrityError, Skill.objects.create, name='TDD')
+
 
 class CompanyModelTestCase(TestCase):
     def test_string_representation(self):
@@ -26,12 +32,21 @@ class CompanyModelTestCase(TestCase):
 
         self.assertEqual(str(google_inc), 'Alphabet')
 
+    def test_name_is_unique(self):
+        Company.objects.create(name='Alphabet')
+
+        self.assertRaises(IntegrityError, Company.objects.create, name='Alphabet')
 
 class UniversityModelTestCase(TestCase):
     def test_string_representation(self):
         itmo = University.objects.create(name='ITMO University')
 
         self.assertEqual(str(itmo), 'ITMO University')
+
+    def test_name_is_unique(self):
+        University.objects.create(name='ITMO University')
+
+        self.assertRaises(IntegrityError, University.objects.create, name='ITMO University')
 
 
 class DeveloperModelTestCase(TestCase):
