@@ -16,7 +16,7 @@ class MultipleFilter(MultipleChoiceFilter):
 
 
 class SkillFilter(filters.FilterSet):
-    skill = MultipleFilter(field_name='skills__title', lookup_expr='in', conjoined=True)
+    skill = MultipleFilter(field_name='skills__name', lookup_expr='in', conjoined=True)
 
     class Meta(object):
         model = Developer

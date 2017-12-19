@@ -45,9 +45,9 @@ class DeveloperTestCase(TestCase):
 
     def test_developer_with_skills(self):
         rob_pike = Developer.objects.create(name='Rob', surname='Pike')
-        rob_pike.skills.create(title='C')
-        rob_pike.skills.create(title='Unix')
-        rob_pike.skills.create(title='Golang')
+        rob_pike.skills.create(name='C')
+        rob_pike.skills.create(name='Unix')
+        rob_pike.skills.create(name='Golang')
 
         response = self.client.get('/developers/2/')
 
@@ -155,9 +155,9 @@ class DevelopersListTestCase(TestCase):
         ])
 
     def test_developers_list_skills(self):
-        self.stallman.skills.create(title='Unix')
-        self.stallman.skills.create(title='Lisp')
-        self.stallman.skills.create(title='Emacs')
+        self.stallman.skills.create(name='Unix')
+        self.stallman.skills.create(name='Lisp')
+        self.stallman.skills.create(name='Emacs')
 
         response = self.client.get('/developers/')
 
@@ -206,10 +206,10 @@ class DevelopersListTestCase(TestCase):
         self.assertListEqual(response.json()[1]['employment_history'], [])
 
     def test_filter_developers_by_skills(self):
-        unix_skill = Skill.objects.create(title='Unix')
-        lisp_skill = Skill.objects.create(title='Lisp')
-        emacs_skill = Skill.objects.create(title='Emacs')
-        electronic_skill = Skill.objects.create(title='Electronic')
+        unix_skill = Skill.objects.create(name='Unix')
+        lisp_skill = Skill.objects.create(name='Lisp')
+        emacs_skill = Skill.objects.create(name='Emacs')
+        electronic_skill = Skill.objects.create(name='Electronic')
 
         Developer.objects.create(name='No skills')
 
