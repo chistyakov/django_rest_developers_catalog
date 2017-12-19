@@ -1,4 +1,6 @@
+from datetime import date
 from datetime import datetime
+from unittest.mock import patch
 
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
@@ -36,6 +38,7 @@ class CompanyModelTestCase(TestCase):
         Company.objects.create(name='Alphabet')
 
         self.assertRaises(IntegrityError, Company.objects.create, name='Alphabet')
+
 
 class UniversityModelTestCase(TestCase):
     def test_string_representation(self):
@@ -98,7 +101,7 @@ class EmploymentModelTestCase(TestCase):
             developer=carmack,
             company=oculus,
             role='CTO',
-            from_date=datetime(year=2013, month=7, day=1),
+            from_date=date(year=2013, month=7, day=1),
             to_date=None,
         )
         self.assertEqual(
@@ -110,10 +113,80 @@ class EmploymentModelTestCase(TestCase):
             developer=carmack,
             company=id_software,
             role='co-founder',
-            from_date=datetime(year=1991, month=2, day=1),
-            to_date=datetime(year=2013, month=7, day=1)
+            from_date=date(year=1991, month=2, day=1),
+            to_date=date(year=2013, month=7, day=1)
         )
         self.assertEqual(
             str(carmack_id_software),
             'John Carmack was co-founder of id Software LLC from 1991-02-01 to 2013-07-01'
         )
+
+    def test_end_of_employment_should_be_less_than_now(self):
+        with patch('developers.models.datetime') as mock_datetime:
+            mock_datetime.now.return_value = datetime(year=2015, month=12, day=21)
+            carmack = Developer.objects.create(name='John', surname='Carmack')
+            oculus = Company.objects.create(name='Oculus VR')
+            carmack_oculus_empl = Employment.objects.create(
+                developer=carmack,
+                company=oculus,
+                role='CTO',
+                from_date=date(year=2013, month=7, day=1),
+                to_date=date(year=2015, month=12, day=22),  # more then patched now
+            )
+
+            self.assertRaises(ValidationError, carmack_oculus_empl.full_clean)
+
+    def test_start_of_employment_should_be_less_than_now(self):
+        with patch('developers.models.datetime') as mock_datetime:
+            mock_datetime.now.return_value = datetime(year=2015, month=12, day=21)
+            carmack = Developer.objects.create(name='John', surname='Carmack')
+            oculus = Company.objects.create(name='Oculus VR')
+            carmack_oculus_empl = Employment.objects.create(
+                developer=carmack,
+                company=oculus,
+                role='CTO',
+                from_date=date(year=2015, month=12, day=22),  # more then patched now
+                to_date=None,
+            )
+
+            self.assertRaises(ValidationError, carmack_oculus_empl.full_clean)
+
+    def test_end_of_employment_should_be_greater_or_equal_than_start(self):
+        carmack = Developer.objects.create(name='John', surname='Carmack')
+        oculus = Company.objects.create(name='Oculus VR')
+
+        # to_date > from_date => ValidationError
+        carmack_oculus_empl = Employment.objects.create(
+            developer=carmack,
+            company=oculus,
+            role='CTO',
+            from_date=date(year=2013, month=7, day=1),
+            to_date=date(year=2013, month=6, day=30),
+        )
+        self.assertRaises(ValidationError, carmack_oculus_empl.full_clean)
+
+        # to_date == from_date => NO ValidationError
+        carmack_oculus_empl = Employment.objects.create(
+            developer=carmack,
+            company=oculus,
+            role='CTO',
+            from_date=date(year=2013, month=7, day=1),
+            to_date=date(year=2013, month=7, day=1),
+        )
+        try:
+            carmack_oculus_empl.full_clean()
+        except ValidationError:
+            self.fail('Unexpected ValidationError')
+
+        # to_date > from_date => NO ValidationError
+        carmack_oculus_empl = Employment.objects.create(
+            developer=carmack,
+            company=oculus,
+            role='CTO',
+            from_date=date(year=2013, month=7, day=1),
+            to_date=date(year=2013, month=7, day=2),
+        )
+        try:
+            carmack_oculus_empl.full_clean()
+        except ValidationError:
+            self.fail('Unexpected ValidationError')

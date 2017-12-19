@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from django.test import TestCase
 
@@ -74,8 +74,8 @@ class DevelopersListTestCase(TestCase):
             developer=self.wozniak,
             company=self.hp,
             role='Intern',
-            from_date=datetime(year=1975, month=1, day=1),
-            to_date=datetime(year=1976, month=4, day=1),
+            from_date=date(year=1975, month=1, day=1),
+            to_date=date(year=1976, month=4, day=1),
         )
 
         response = self.client.get('/developers/')

@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 
@@ -55,12 +58,24 @@ class Education(models.Model):
                 f'from {self.university} at {self.year_of_graduation}')
 
 
+# The MaxValueValidator executed only once:
+# https://stackoverflow.com/a/41422670
+def less_then_now_validator(value):
+    if value and value > datetime.now().date():
+        raise ValidationError('date should be less then now')
+
+
 class Employment(models.Model):
     developer = models.ForeignKey(Developer, on_delete=models.CASCADE)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     role = models.CharField(max_length=200)
-    from_date = models.DateField()
-    to_date = models.DateField(null=True)
+    from_date = models.DateField(
+        validators=(less_then_now_validator, )
+    )
+    to_date = models.DateField(
+        null=True,
+        validators=(less_then_now_validator,)
+    )
 
     def __str__(self):
         if self.to_date:
@@ -69,3 +84,7 @@ class Employment(models.Model):
         else:
             return (f'{self.developer} is being {self.role} of {self.company} '
                     f'from {self.from_date:%Y-%m-%d} till now')
+
+    def clean(self):
+        if self.to_date and self.to_date < self.from_date:
+            raise ValidationError('start of employment should be greater then end')

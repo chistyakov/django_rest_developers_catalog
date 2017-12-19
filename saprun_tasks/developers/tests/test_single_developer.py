@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 
 from django.test import TestCase
 
@@ -72,7 +72,7 @@ class DeveloperTestCase(TestCase):
             developer=self.torvalds,
             company=linux_foundation,
             role='OSDL Fellow',
-            from_date=datetime(year=2003, month=1, day=1),
+            from_date=date(year=2003, month=1, day=1),
             to_date=None
         )
 
@@ -93,15 +93,15 @@ class DeveloperTestCase(TestCase):
             developer=achistyakov,
             company=fsecure,
             role='Test Engineer',
-            from_date=datetime(year=2012, month=4, day=1),
-            to_date=datetime(year=2015, month=7, day=1),
+            from_date=date(year=2012, month=4, day=1),
+            to_date=date(year=2015, month=7, day=1),
         )
         Employment.objects.create(
             developer=achistyakov,
             company=vispamedia,
             role='Test Automation Engineer',
-            from_date=datetime(year=2016, month=7, day=1),
-            to_date=datetime(year=2017, month=12, day=1),
+            from_date=date(year=2016, month=7, day=1),
+            to_date=date(year=2017, month=12, day=1),
         )
 
         response = self.client.get('/developers/2/')
